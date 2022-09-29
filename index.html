@@ -1,119 +1,102 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en-us">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity WebGL Player | Project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>My project</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+
+<script src = "sdk/blippar-webar-sdk-v1.4.2/blippar/webar-sdk-v1.4.2.min.js?license-key=b8d4fe1f-7fc7-4f6a-b5ab-e39902d14d84"
+webar-mode="marker-tracking"
+    auto-start="false"
+    auto-init="true"
+    auto-marker-detection="true"
+show-guide-animation-url=""
+
+    rendering-engine="unity"
+logo-src="images/test_logo_here.png"
+logo-height="116px"
+progress-dot-ring-scale="0.30"
+progress-dot-ring-color="#00AAFF"
+progress-ring-scale="0.36"
+progress-ring-color="#00FFFF"
+progress-ring-line-width="5"
+
+alert-border-color="#00FFFF"
+alert-border-width="5px"
+alert-background-color="#283747"
+alert-message-text-color="#00AAFF"
+alert-button-color="#00FFFF"
+alert-button-text-color="#283747"
+alert-button-height="50px"
+alert-camera-permission-text="We need to ask for access to the camera so this experience can work!!!"
+alert-camera-permission-button-text="No Problem"
+alert-motion-permission-text="Now we need access to motion sensors!!!"
+alert-motion-permission-button-text="No Problem"
+    
+ui-background-color="#283747"
+ui-text-color="#00FFFF"
+desktop-logo-src="images/test_desktop_logo.png"
+desktop-logo-width="108px"
+desktop-logo-height="30px"
+issue-img-src="images/test_issue_img.png"
+issue-img-width="116px"
+issue-img-height="116px"
+    show-guide-view="true"></script>
+
   </head>
-  <body>
-    <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600></canvas>
-      <div id="unity-loading-bar">
-        <div id="unity-logo"></div>
-        <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
-        </div>
+  <body class="dark">
+      <div id="unity-container" class="unity-desktop">
+        <canvas id="unity-canvas" style="position: absolute;"></canvas>
       </div>
-      <div id="unity-warning"> </div>
-      <div id="unity-footer">
-        <div id="unity-webgl-logo"></div>
-        <div id="unity-fullscreen-button"></div>
-        <div id="unity-build-title">Project</div>
-      </div>
-    </div>
-    <script>
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-      var warningBanner = document.querySelector("#unity-warning");
+<script>
 
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
-        function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
-        }
-        var div = document.createElement('div');
-        div.innerHTML = msg;
-        warningBanner.appendChild(div);
-        if (type == 'error') div.style = 'background: red; padding: 10px;';
-        else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
-        }
-        updateBannerVisibility();
-      }
-
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/Build.loader.js";
-      var config = {
-        dataUrl: buildUrl + "/Build.data.unityweb",
-        frameworkUrl: buildUrl + "/Build.framework.js.unityweb",
-        codeUrl: buildUrl + "/Build.wasm.unityweb",
+var Yrotvalue = undefined;
+var UNITYINSTANCE = undefined;
+const cameraObjectName = "webarCamera";
+const stageObjectName = "aa05b264-3a51-4120-af88-213417c2bd59, 2907a5eb-1dbc-4978-8d98-2a1ba4fc5f28";
+      const buildUrl = "Build";
+      const loaderUrl = buildUrl + "/WebAR-My project.loader.js";
+      const config = {
+        dataUrl: buildUrl + "/WebAR-My project.data.unityweb",
+        frameworkUrl: buildUrl + "/WebAR-My project.framework.js.unityweb",
+        codeUrl: buildUrl + "/WebAR-My project.wasm.unityweb",
         streamingAssetsUrl: "StreamingAssets",
         companyName: "DefaultCompany",
-        productName: "Project",
-        productVersion: "0.1.0",
-        showBanner: unityShowBanner,
+        productName: "My project",
+        productVersion: "0.1",
       };
 
-      // By default Unity keeps WebGL canvas render target size matched with
-      // the DOM size of the canvas element (scaled by window.devicePixelRatio)
-      // Set this to false if you want to decouple this synchronization from
-      // happening inside the engine, and you would instead like to size up
-      // the canvas DOM size and WebGL render target sizes yourself.
-      // config.matchWebGLToCanvasSize = false;
+      const container = document.querySelector("#unity-container");
+      const canvas = document.querySelector("#unity-canvas");
 
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
-
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
         container.className = "unity-mobile";
-        canvas.className = "unity-mobile";
-
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
-
-        unityShowBanner('WebGL builds are not supported on mobile devices.');
-      } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
-
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
+        config.devicePixelRatio = 1;
       }
 
-      loadingBar.style.display = "block";
-
-      var script = document.createElement("script");
+      const script = document.createElement("script");
       script.src = loaderUrl;
       script.onload = () => {
         createUnityInstance(canvas, config, (progress) => {
-          progressBarFull.style.width = 100 * progress + "%";
+
         }).then((unityInstance) => {
-          loadingBar.style.display = "none";
-          fullscreenButton.onclick = () => {
-            unityInstance.SetFullscreen(1);
-          };
+          UNITYINSTANCE  = unityInstance;
+          //console.log("Web AR Call : " + "cameraName- " + blipparCameraName + " " + "stageName- " + blipparStageName + " " + "blipparCanvas- " + canvas.id);
         }).catch((message) => {
           alert(message);
         });
       };
+
+      //WEBAR SDK INIT function 
       document.body.appendChild(script);
-    </script>
+	    function GetCommand(str){
+		        Yrotvalue=(str);
+        }
+
+	    WEBARSDK.InitUnityWebGL(canvas.id, cameraObjectName, stageObjectName);
+      </script>
   </body>
 </html>
